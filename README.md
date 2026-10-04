@@ -34,10 +34,63 @@ a verdict.
 
 - **Java 21 + Quarkus 3.33** (LTS)
 - **[Quarkus LangChain4j](https://docs.quarkiverse.io/quarkus-langchain4j/dev/)**
-  with the Anthropic provider: a declarative AI service returning a typed
-  `Evaluation` record
+  with the Anthropic provider: a declarative AI service returning a typed DTO
 - **Qute + [htmx](https://htmx.org)**: server-rendered HTML, no frontend build step
+- **Hexagonal architecture** (ports and adapters), enforced by
+  [ArchUnit](https://www.archunit.org) tests
 - No database: your practice target and recent questions stay in your browser
+
+## Architecture
+
+Ports and adapters, organized by feature. Everything lives under
+`dev.charold.coach.practice`:
+
+```text
+practice/
+├── domain/                     plain Java, no framework imports
+│   ├── model/                  Evaluation, Level, PracticeProfile, EnglishFix, RewriteDirection
+│   ├── exception/              PracticeLimitReachedException
+│   └── port/
+│       ├── in/                 EvaluateAnswerUseCase, RewriteAnswerUseCase
+│       └── out/                AnswerEvaluatorPort, UsageQuotaPort
+├── application/                EvaluateAnswerService, RewriteAnswerService (plain Java)
+└── infrastructure/
+    ├── adapter/in/web/         CoachResource (Qute + htmx), AccessCodeGuard, dto/PracticeForm
+    ├── adapter/out/ai/         LangChain4jEvaluatorAdapter, InterviewCoach, AiEvaluationMapper, dto/
+    ├── adapter/out/ai/mock/    MockEvaluatorAdapter
+    ├── adapter/out/quota/      InMemoryUsageQuotaAdapter
+    └── config/                 PracticeBeanConfig: picks which adapter backs each port
+```
+
+```mermaid
+flowchart LR
+    Browser -->|htmx| Web[CoachResource]
+    Web --> UC{{EvaluateAnswerUseCase<br/>RewriteAnswerUseCase}}
+    UC -.implemented by.-> App[Application services]
+    App --> EP{{AnswerEvaluatorPort}}
+    App --> QP{{UsageQuotaPort}}
+    EP -.-> LLM[LangChain4jEvaluatorAdapter<br/>Claude via Anthropic API]
+    EP -.-> Mock[MockEvaluatorAdapter]
+    QP -.-> Mem[InMemoryUsageQuotaAdapter]
+```
+
+Decisions worth knowing:
+
+- **The model's JSON contract stays in the adapter.** The LLM fills
+  `AiEvaluationDto`, which is mapped to the domain `Evaluation`. Renaming a
+  domain field never changes the prompt, and sloppy model output (missing
+  lists, out-of-range scores) is cleaned up at the boundary.
+- **Mock mode is an adapter, not an `if`.** `PracticeBeanConfig` chooses
+  `MockEvaluatorAdapter` or `LangChain4jEvaluatorAdapter` from `COACH_MOCK`.
+- **The access code lives in the web adapter.** It protects the API key at the
+  HTTP edge; it isn't a business rule. The daily limit is a port because its
+  storage will change (in memory today, a shared store with several replicas).
+- **Application services carry no annotations.** They're created with `@Produces`
+  in `infrastructure/config`, so the use cases are testable with plain fakes.
+
+`ArchitectureTest` fails the build if the domain imports a framework, if the
+web layer reaches an outbound adapter directly, or if anything other than the
+config depends on the application services.
 
 ## Run it locally
 
@@ -87,8 +140,9 @@ Set `COACH_ACCESS_CODE` and share the code only with people you trust, keep
 mvn verify
 ```
 
-Tests run in mock mode, so they need no key and spend no tokens. CI runs them on
-every push.
+Tests need no API key and spend no tokens: use cases run against hand-written
+fakes, the web tests run in mock mode, and `ArchitectureTest` checks the
+dependency rules. CI runs them on every push.
 
 ## Roadmap
 
