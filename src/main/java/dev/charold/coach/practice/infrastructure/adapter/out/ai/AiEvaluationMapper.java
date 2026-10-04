@@ -32,11 +32,11 @@ final class AiEvaluationMapper {
                 dto.didWell(),
                 dto.missing(),
                 dto.modelAnswer(),
-                toDomain(dto.englishFixes()),
+                fixesToDomain(dto.englishFixes()),
                 dto.followUp());
     }
 
-    private static List<EnglishFix> toDomain(List<AiEnglishFixDto> fixes) {
+    private static List<EnglishFix> fixesToDomain(List<AiEnglishFixDto> fixes) {
         if (fixes == null) {
             return List.of();
         }
