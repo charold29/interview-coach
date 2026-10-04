@@ -33,8 +33,9 @@ a verdict.
 ## Stack
 
 - **Java 21 + Quarkus 3.33** (LTS)
-- **[Quarkus LangChain4j](https://docs.quarkiverse.io/quarkus-langchain4j/dev/)**
-  with the Anthropic provider: a declarative AI service returning a typed DTO
+- **Anthropic Messages API** through a **MicroProfile Rest Client** (default), or
+  **[Quarkus LangChain4j](https://docs.quarkiverse.io/quarkus-langchain4j/dev/)**
+  as an alternative adapter
 - **Qute + [htmx](https://htmx.org)**: server-rendered HTML, no frontend build step
 - **Hexagonal architecture** (ports and adapters), enforced by
   [ArchUnit](https://www.archunit.org) tests
@@ -56,7 +57,10 @@ practice/
 ├── application/                EvaluateAnswerService, RewriteAnswerService (plain Java)
 └── infrastructure/
     ├── adapter/in/web/         CoachResource (Qute + htmx), AccessCodeGuard, dto/PracticeForm
-    ├── adapter/out/ai/         LangChain4jEvaluatorAdapter, InterviewCoach, AiEvaluationMapper, dto/
+    ├── adapter/out/ai/         AnthropicEvaluatorAdapter, LangChain4jEvaluatorAdapter, InterviewCoach,
+    │                           AiPrompts (shared rubric), AiEvaluationMapper, dto/
+    ├── adapter/out/ai/anthropic/  AnthropicMessagesClient (MP Rest Client), request/response
+    │                              records, AnthropicErrorMapper
     ├── adapter/out/ai/mock/    MockEvaluatorAdapter
     ├── adapter/out/quota/      InMemoryUsageQuotaAdapter
     └── config/                 PracticeBeanConfig: picks which adapter backs each port
@@ -69,7 +73,8 @@ flowchart LR
     UC -.implemented by.-> App[Application services]
     App --> EP{{AnswerEvaluatorPort}}
     App --> QP{{UsageQuotaPort}}
-    EP -.-> LLM[LangChain4jEvaluatorAdapter<br/>Claude via Anthropic API]
+    EP -.default.-> Direct[AnthropicEvaluatorAdapter<br/>MP Rest Client → Messages API]
+    EP -.-> LC4J[LangChain4jEvaluatorAdapter]
     EP -.-> Mock[MockEvaluatorAdapter]
     QP -.-> Mem[InMemoryUsageQuotaAdapter]
 ```
@@ -80,8 +85,15 @@ Decisions worth knowing:
   `AiEvaluationDto`, which is mapped to the domain `Evaluation`. Renaming a
   domain field never changes the prompt, and sloppy model output (missing
   lists, out-of-range scores) is cleaned up at the boundary.
-- **Mock mode is an adapter, not an `if`.** `PracticeBeanConfig` chooses
-  `MockEvaluatorAdapter` or `LangChain4jEvaluatorAdapter` from `COACH_MOCK`.
+- **We call the Anthropic API ourselves.** quarkus-langchain4j-anthropic always
+  sends `top_k=40`, and current Claude models reject it (and `temperature`) with
+  a 400. `AnthropicEvaluatorAdapter` owns the request body (model, max_tokens,
+  system, messages and nothing else) and a test pins that. Swapping it in was a
+  new adapter behind the same port: no domain or use-case code changed.
+- **Errors say why.** `AnthropicErrorMapper` turns API error bodies into one-line
+  messages like `HTTP 400 invalid_request_error: ...`.
+- **Mock mode is an adapter, not an `if`.** `PracticeBeanConfig` picks the
+  evaluator from `COACH_MOCK` and `COACH_PROVIDER`.
 - **The access code lives in the web adapter.** It protects the API key at the
   HTTP edge; it isn't a business rule. The daily limit is a port because its
   storage will change (in memory today, a shared store with several replicas).
@@ -123,10 +135,16 @@ docker run -p 8080:8080 -e ANTHROPIC_API_KEY=sk-ant-... interview-coach
 |---|---|---|
 | `ANTHROPIC_API_KEY` | | API key from the Claude Console. Required unless mock mode is on. |
 | `COACH_MODEL` | `claude-sonnet-5-5` | Model used for scoring and rewrites. |
+| `COACH_PROVIDER` | `anthropic` | Evaluator: `anthropic` (direct API) or `langchain4j`. |
 | `COACH_ACCESS_CODE` | empty | If set, people must enter this code before practicing. |
 | `COACH_DAILY_LIMIT` | `100` | Max model calls per day for the whole instance. |
 | `COACH_MOCK` | `false` | Canned responses, no API calls. |
+| `COACH_LOG_LEVEL` | `INFO` (`DEBUG` in dev) | Log level for the app's own code. |
+| `COACH_LOG_LLM` | `false` | LangChain4j adapter only: log the API's responses, for diagnosis. |
 | `PORT` | `8080` | HTTP port (set automatically by most hosting platforms). |
+
+All settings live in `src/main/resources/application.yaml`, with `%prod`, `%dev`
+and `%test` profiles. Production logging is kept to one line per event.
 
 ### Sharing your instance
 
