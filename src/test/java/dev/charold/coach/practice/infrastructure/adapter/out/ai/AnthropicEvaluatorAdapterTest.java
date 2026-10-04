@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import jakarta.enterprise.inject.Vetoed;
+
 import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -124,6 +126,11 @@ class AnthropicEvaluatorAdapterTest {
         assertTrue(client.lastRequest.messages().get(0).content().contains("Rewrite it to be shorter."));
     }
 
+    /**
+     * Quarkus turns every implementation of a REST client interface into a CDI
+     * bean, test classes included; @Vetoed keeps this stub out of the container.
+     */
+    @Vetoed
     private static final class RecordingClient implements AnthropicMessagesClient {
         private final String replyText;
         private final String stopReason;
