@@ -1,0 +1,76 @@
+<article class="scorecard" data-question="{question}" data-score="{evaluation.overallDisplay}" data-level="{evaluation.level.label}">
+
+  {#if evaluation.technicallyIncorrect}
+  <p class="notice notice-wrong" role="alert">Technically incorrect. {evaluation.verdict}</p>
+  {/if}
+
+  <header class="verdict">
+    <p class="overall"><span class="overall-number">{evaluation.overallDisplay}</span><span class="overall-of">/10</span></p>
+    <div>
+      <p class="overall-level">
+        Reads as <strong>{evaluation.level.label}</strong>.
+        {#if evaluation.meets(profile.targetLevel)}That clears your {profile.targetLevel.label} target.{#else}You're aiming for {profile.targetLevel.label}.{/if}
+      </p>
+      {#if !evaluation.technicallyIncorrect}<p class="overall-verdict">{evaluation.verdict}</p>{/if}
+    </div>
+  </header>
+
+  <div class="band" role="img" aria-label="Score {evaluation.overallDisplay} out of 10 on the level scale; target {profile.targetLevel.label}">
+    <span class="band-seg band-junior{#if profile.targetLevel.label == 'Junior'} is-target{/if}">Junior</span>
+    <span class="band-seg band-mid{#if profile.targetLevel.label == 'Mid'} is-target{/if}">Mid</span>
+    <span class="band-seg band-senior{#if profile.targetLevel.label == 'Senior'} is-target{/if}">Senior</span>
+    <span class="band-seg band-staff{#if profile.targetLevel.label == 'Staff'} is-target{/if}">Staff</span>
+    <span class="band-marker" style="--v: {evaluation.overallDisplay}"></span>
+  </div>
+
+  <dl class="axes">
+    <div class="axis"><dt>Technical accuracy</dt><dd><span class="axis-track"><span class="axis-fill" style="--v: {evaluation.technicalAccuracy}"></span></span><span class="axis-value">{evaluation.technicalAccuracy}</span></dd></div>
+    <div class="axis"><dt>Depth</dt><dd><span class="axis-track"><span class="axis-fill" style="--v: {evaluation.depth}"></span></span><span class="axis-value">{evaluation.depth}</span></dd></div>
+    <div class="axis"><dt>Terminology</dt><dd><span class="axis-track"><span class="axis-fill" style="--v: {evaluation.terminology}"></span></span><span class="axis-value">{evaluation.terminology}</span></dd></div>
+    <div class="axis"><dt>Clarity</dt><dd><span class="axis-track"><span class="axis-fill" style="--v: {evaluation.clarity}"></span></span><span class="axis-value">{evaluation.clarity}</span></dd></div>
+  </dl>
+
+  <section class="notes">
+    <h3>What worked</h3>
+    <ul class="list-good">
+      {#for item in evaluation.didWell}<li>{item}</li>{/for}
+    </ul>
+
+    <h3>What a senior would have added</h3>
+    <ul class="list-missing">
+      {#for item in evaluation.missing}<li>{item}</li>{/for}
+    </ul>
+  </section>
+
+  <section class="model">
+    <h3>Say it like this</h3>
+    <div id="model-answer">{#include CoachResource/modelAnswer answer=evaluation.modelAnswer /}</div>
+    <div class="model-actions">
+      <button type="button" name="direction" value="shorter" hx-post="/rewrite" hx-target="#model-answer"
+              hx-include="#practice, #model-answer" hx-indicator="#rewriting">Make it shorter</button>
+      <button type="button" name="direction" value="longer" hx-post="/rewrite" hx-target="#model-answer"
+              hx-include="#practice, #model-answer" hx-indicator="#rewriting">Make it longer</button>
+      <span id="rewriting" class="working" role="status">Rewriting.</span>
+    </div>
+  </section>
+
+  {#if evaluation.englishFixes}
+  <section class="fixes">
+    <h3>English fixes</h3>
+    <table>
+      <thead><tr><th scope="col">You said</th><th scope="col">Better</th><th scope="col">Why</th></tr></thead>
+      <tbody>
+        {#for fix in evaluation.englishFixes}
+        <tr><td class="said">{fix.youSaid}</td><td class="better">{fix.better}</td><td>{fix.why}</td></tr>
+        {/for}
+      </tbody>
+    </table>
+  </section>
+  {/if}
+
+  <section class="followup">
+    <h3>Next, they'd ask</h3>
+    <p>{evaluation.followUp}</p>
+    <button type="button" class="link" data-use-followup="{evaluation.followUp}">Practice this one</button>
+  </section>
+</article>

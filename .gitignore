@@ -1,0 +1,25 @@
+# Secrets: never commit real keys
+.env
+.env.*
+!.env.example
+
+# Personal notes: your profile (salary, visa status, employers) stays local
+profile.md
+*.local.md
+
+# Build
+target/
+
+# IDE / OS
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+.factorypath
+.DS_Store
+Thumbs.db
+
+# Quarkus
+.quarkus/

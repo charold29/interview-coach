@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Interview Coach</title>
+  <meta name="description" content="Practice technical interview answers and get scored against a senior-level rubric.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Literata:opsz,wght@7..72,400;7..72,500&display=swap">
+  <link rel="stylesheet" href="/app.css">
+  <script src="https://unpkg.com/htmx.org@2.0.4" defer></script>
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <header class="masthead">
+    <h1>Interview Coach</h1>
+    <p>Answer the question the way you'd say it out loud. You get a score on four axes, what a senior would have added, and fixes for your English.</p>
+  </header>
+
+  {#if mock}
+  <p class="notice notice-mock">Mock mode is on: every answer gets the same sample evaluation and no API calls are made.</p>
+  {/if}
+
+  <main class="layout">
+    <section class="practice" aria-labelledby="practice-heading">
+      <h2 id="practice-heading" class="visually-hidden">Your practice</h2>
+
+      <form id="practice" hx-post="/evaluate" hx-target="#result" hx-indicator="#working"
+            hx-disabled-elt="find button[type=submit]">
+
+        <details class="target" id="target">
+          <summary>
+            <span class="target-label">Practicing for</span>
+            <span class="target-summary" id="target-summary">Senior Backend Engineer</span>
+            <span class="target-edit">Edit</span>
+          </summary>
+
+          <div class="target-fields">
+            <label>Role
+              <input name="role" id="role" list="roles" value="Backend Engineer" maxlength="100" autocomplete="off">
+              <datalist id="roles">
+                <option value="Backend Engineer">
+                <option value="Full-stack Engineer">
+                <option value="Frontend Engineer">
+                <option value="AI Engineer">
+                <option value="Platform Engineer">
+                <option value="Data Engineer">
+              </datalist>
+            </label>
+
+            <label>Level you're aiming for
+              <select name="targetLevel" id="targetLevel">
+                {#for level in levels}
+                <option value="{level.name}"{#if level.label == 'Senior'} selected{/if}>{level.label}</option>
+                {/for}
+              </select>
+            </label>
+
+            <label>Years of experience
+              <input name="years" id="years" type="number" min="0" max="50" value="3" inputmode="numeric">
+            </label>
+
+            <label class="wide">Stack <span class="hint">optional</span>
+              <input name="stack" id="stack" placeholder="Java, Quarkus, Kafka, PostgreSQL" maxlength="300">
+            </label>
+
+            <label class="wide">Language for the "why" of English fixes
+              <input name="feedbackLanguage" id="feedbackLanguage" list="languages" value="English" maxlength="40">
+              <datalist id="languages">
+                <option value="English">
+                <option value="Español">
+                <option value="Português">
+              </datalist>
+            </label>
+
+            {#if accessCodeRequired}
+            <label class="wide">Access code
+              <input name="accessCode" id="accessCode" type="password" autocomplete="off" required>
+            </label>
+            {/if}
+          </div>
+        </details>
+
+        <label class="field">The interviewer asks
+          <textarea name="question" id="question" rows="3" maxlength="1000" required
+                    placeholder="How would you reduce p99 latency in a service that aggregates three downstream calls?"></textarea>
+        </label>
+
+        <label class="field">You answer
+          <textarea name="answer" id="answer" rows="9" maxlength="4000" required
+                    placeholder="Write it the way you'd say it. Don't polish it: the point is to see what comes out under pressure."></textarea>
+        </label>
+
+        <div class="actions">
+          <button type="submit" class="primary">Score my answer</button>
+          <span id="working" class="working" role="status">Scoring. This takes 10 to 30 seconds.</span>
+        </div>
+      </form>
+
+      <section class="history" id="history" hidden aria-labelledby="history-heading">
+        <h2 id="history-heading">Recent questions</h2>
+        <ol id="history-list"></ol>
+        <button type="button" class="link" id="history-clear">Clear history</button>
+      </section>
+    </section>
+
+    <section class="result" id="result" aria-live="polite">
+      <div class="empty">
+        <p>Your scorecard shows up here.</p>
+        <p>Paste a question you expect in your next interview, answer it without notes, then compare your answer with the senior version.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>Scores come from a language model following <a href="https://github.com/charold29/interview-coach/blob/main/docs/rubric.md">this rubric</a>. Treat them as a sparring partner, not a verdict.</p>
+  </footer>
+</body>
+</html>
