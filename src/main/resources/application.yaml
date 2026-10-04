@@ -18,8 +18,9 @@ quarkus:
       chat-model:
         model-name: ${COACH_MODEL:claude-sonnet-5-5}
         max-tokens: 2048
-        # Low temperature: scoring should be consistent between runs.
-        temperature: 0.2
+        # No temperature: current Claude models reject it with a 400
+        # ("`temperature` is deprecated for this model"). Scoring consistency
+        # comes from the rubric in the system prompt instead.
 
   log:
     level: INFO
