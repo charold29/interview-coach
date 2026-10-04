@@ -1,0 +1,68 @@
+# Interview Coach configuration.
+# Values in ${...} come from environment variables (or .env in dev mode).
+# Never put a real API key in this file.
+
+quarkus:
+  http:
+    # PaaS providers (Render, Fly.io, Railway) inject PORT.
+    port: ${PORT:8080}
+
+  langchain4j:
+    anthropic:
+      api-key: ${ANTHROPIC_API_KEY:missing}
+      timeout: 60s
+      # Diagnostics: COACH_LOG_LLM=true logs the API's responses, including
+      # error bodies (why a request got a 400). Requests are never logged, so
+      # the x-api-key header can't end up in the logs. Turn it off afterwards.
+      log-responses: ${COACH_LOG_LLM:false}
+      chat-model:
+        model-name: ${COACH_MODEL:claude-sonnet-5-5}
+        max-tokens: 2048
+        # Low temperature: scoring should be consistent between runs.
+        temperature: 0.2
+
+  log:
+    level: INFO
+    category:
+      # Our own code. COACH_LOG_LEVEL=DEBUG for more detail.
+      "dev.charold.coach":
+        level: ${COACH_LOG_LEVEL:INFO}
+
+coach:
+  # Optional shared code people must type before practicing. Empty = open.
+  access-code: "${COACH_ACCESS_CODE:}"
+  # Max model calls per day for the whole instance (evaluations + rewrites).
+  daily-limit: ${COACH_DAILY_LIMIT:100}
+  # true = canned responses, no API calls. Useful for UI work and tests.
+  mock: ${COACH_MOCK:false}
+
+# --- Production (the packaged app, e.g. on Render) ----------------------------
+"%prod":
+  quarkus:
+    banner:
+      enabled: false
+    log:
+      category:
+        # LangChain4j logs a WARN with a full stack trace on every retry; the
+        # final failure is already logged once by the web adapter.
+        "dev.langchain4j.internal.RetryUtils":
+          level: ERROR
+    vertx:
+      # The free Render instance has very little CPU, so the first TLS
+      # handshake can block the event loop for ~3 s. Warn only past 5 s.
+      max-event-loop-execute-time: 5s
+
+# --- Dev mode (mvn quarkus:dev) -----------------------------------------------
+"%dev":
+  quarkus:
+    log:
+      category:
+        "dev.charold.coach":
+          level: ${COACH_LOG_LEVEL:DEBUG}
+
+# --- Tests: mock evaluator, no key needed, no tokens spent --------------------
+"%test":
+  coach:
+    mock: true
+    access-code: ""
+    daily-limit: 1000
