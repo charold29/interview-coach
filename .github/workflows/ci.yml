@@ -28,7 +28,12 @@ jobs:
       - name: Report build errors
         if: failure()
         run: |
-          errors=$(grep -E '^\[ERROR\]' build.log | grep -vE 'Re-run Maven|-> \[Help|^\[ERROR\] *$|To see the full stack|Help 1\]' | head -40 || true)
+          errors=$(grep -E '^\[ERROR\]' build.log \
+            | grep -vE 'Re-run Maven|-> \[Help|^\[ERROR\] *$|To see the full stack|Help 1\]|^\[ERROR\][[:space:]]+at ' \
+            | head -25 || true)
+          causes=$(cat build.log target/surefire-reports/*.txt target/surefire-reports/*.dumpstream 2>/dev/null \
+            | grep -E 'Caused by|Exception: ' | grep -vE '^[[:space:]]+at ' | awk '!seen[$0]++' | head -15 || true)
+          errors=$(printf '%s\n%s' "$errors" "$causes")
           if [ -n "$errors" ]; then
             echo "::error title=Maven build failed::$(printf '%s' "$errors" | sed ':a;N;$!ba;s/%/%25/g;s/\r//g;s/\n/%0A/g')"
           fi
