@@ -7,6 +7,15 @@ quarkus:
     # PaaS providers (Render, Fly.io, Railway) inject PORT.
     port: ${PORT:8080}
 
+  # Direct Anthropic adapter (coach.provider=anthropic): MicroProfile Rest Client.
+  rest-client:
+    anthropic:
+      url: https://api.anthropic.com
+      connect-timeout: 5000
+      read-timeout: 60000
+
+  # LangChain4j adapter (coach.provider=langchain4j). Note: the extension always
+  # sends top_k=40, which current Claude models reject; use an older model here.
   langchain4j:
     anthropic:
       api-key: ${ANTHROPIC_API_KEY:missing}
@@ -30,6 +39,14 @@ quarkus:
         level: ${COACH_LOG_LEVEL:INFO}
 
 coach:
+  # Which evaluator judges answers: "anthropic" (direct Messages API) or
+  # "langchain4j". Ignored when mock is true.
+  provider: ${COACH_PROVIDER:anthropic}
+  anthropic:
+    api-key: ${ANTHROPIC_API_KEY:missing}
+    model: ${COACH_MODEL:claude-sonnet-5-5}
+    version: "2023-06-01"
+    max-tokens: 2048
   # Optional shared code people must type before practicing. Empty = open.
   access-code: "${COACH_ACCESS_CODE:}"
   # Max model calls per day for the whole instance (evaluations + rewrites).
