@@ -1,8 +1,10 @@
 package dev.charold.coach.practice.domain.port.out;
 
 /**
- * Driven port: a budget of evaluator calls. In memory today; a shared store
- * (Redis, a database) once the app runs on more than one instance.
+ * UsageQuotaPort
+ *
+ * @author Harold Rojas Plasencia
+ * @since 2026-10-03
  */
 public interface UsageQuotaPort {
 

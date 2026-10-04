@@ -5,7 +5,10 @@ import dev.charold.coach.practice.domain.model.PracticeProfile;
 import dev.charold.coach.practice.domain.model.RewriteDirection;
 
 /**
- * Driver port: produce a shorter or longer version of a model answer.
+ * RewriteAnswerUseCase
+ *
+ * @author Harold Rojas Plasencia
+ * @since 2026-10-03
  */
 public interface RewriteAnswerUseCase {
 

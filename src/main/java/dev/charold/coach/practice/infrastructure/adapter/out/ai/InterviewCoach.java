@@ -7,14 +7,10 @@ import dev.langchain4j.service.UserMessage;
 import io.quarkiverse.langchain4j.RegisterAiService;
 
 /**
- * The LLM-backed coach (LangChain4j AI service). Each call is stateless (no
- * chat memory) so one user's practice never leaks into another user's prompt.
+ * InterviewCoach
  *
- * It returns {@link AiEvaluationDto}, the JSON contract with the model, not the
- * domain {@code Evaluation}: renaming a domain field must never change the prompt.
- *
- * Note: prompt text is a Qute template, so literal curly braces must not appear
- * in it. The JSON format instructions for the DTO are appended by LangChain4j.
+ * @author Harold Rojas Plasencia
+ * @since 2026-10-03
  */
 @RegisterAiService(chatMemoryProviderSupplier = RegisterAiService.NoChatMemoryProviderSupplier.class)
 public interface InterviewCoach {

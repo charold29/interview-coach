@@ -9,8 +9,10 @@ import dev.charold.coach.practice.domain.model.RewriteDirection;
 import dev.charold.coach.practice.domain.port.out.AnswerEvaluatorPort;
 
 /**
- * Secondary adapter for mock mode: canned responses, no API calls. Realistic
- * enough to design the UI against and to run the tests without a key.
+ * MockEvaluatorAdapter
+ *
+ * @author Harold Rojas Plasencia
+ * @since 2026-10-03
  */
 public class MockEvaluatorAdapter implements AnswerEvaluatorPort {
 

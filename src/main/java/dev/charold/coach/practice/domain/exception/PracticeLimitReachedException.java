@@ -1,7 +1,10 @@
 package dev.charold.coach.practice.domain.exception;
 
 /**
- * Thrown when the instance has used its quota of evaluations for the day.
+ * PracticeLimitReachedException
+ *
+ * @author Harold Rojas Plasencia
+ * @since 2026-10-03
  */
 public class PracticeLimitReachedException extends RuntimeException {
 

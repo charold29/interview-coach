@@ -8,9 +8,10 @@ import dev.charold.coach.practice.infrastructure.adapter.out.ai.dto.AiEvaluation
 import dev.charold.coach.practice.infrastructure.adapter.out.ai.dto.AiEvaluationDto.AiEnglishFixDto;
 
 /**
- * Translates the model's JSON contract into the domain. Model output is
- * untrusted: missing lists and fixes become empty, blank fixes are dropped,
- * and the domain record clamps scores to 0-10.
+ * AiEvaluationMapper
+ *
+ * @author Harold Rojas Plasencia
+ * @since 2026-10-03
  */
 final class AiEvaluationMapper {
 

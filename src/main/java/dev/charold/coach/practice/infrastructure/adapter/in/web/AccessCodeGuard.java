@@ -8,9 +8,10 @@ import jakarta.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 /**
- * Optional shared code required to use a deployed instance. An HTTP-level
- * concern that protects the API key, not a business rule, so it lives in the
- * web adapter instead of the domain.
+ * AccessCodeGuard
+ *
+ * @author Harold Rojas Plasencia
+ * @since 2026-10-03
  */
 @ApplicationScoped
 public class AccessCodeGuard {

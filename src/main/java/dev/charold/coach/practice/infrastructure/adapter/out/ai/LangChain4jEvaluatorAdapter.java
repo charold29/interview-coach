@@ -8,8 +8,10 @@ import dev.charold.coach.practice.domain.model.RewriteDirection;
 import dev.charold.coach.practice.domain.port.out.AnswerEvaluatorPort;
 
 /**
- * Secondary adapter: judges answers with a language model through LangChain4j.
- * The provider (Anthropic today) is configuration, not code.
+ * LangChain4jEvaluatorAdapter
+ *
+ * @author Harold Rojas Plasencia
+ * @since 2026-10-03
  */
 public class LangChain4jEvaluatorAdapter implements AnswerEvaluatorPort {
 

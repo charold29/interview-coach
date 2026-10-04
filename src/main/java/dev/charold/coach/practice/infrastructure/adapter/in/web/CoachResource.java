@@ -23,9 +23,10 @@ import io.quarkus.qute.CheckedTemplate;
 import io.quarkus.qute.TemplateInstance;
 
 /**
- * Primary adapter: the server-rendered UI. Full page on GET /, HTML fragments
- * for htmx on the POSTs. It only talks to the driver ports (use cases).
- * Errors come back as fragments with status 200 so htmx swaps them in place.
+ * CoachResource
+ *
+ * @author Harold Rojas Plasencia
+ * @since 2026-10-03
  */
 @Path("/")
 @Produces(MediaType.TEXT_HTML)
@@ -36,6 +37,12 @@ public class CoachResource {
     private static final String LIMIT_MESSAGE =
             "The daily practice limit for this instance has been reached. Try again tomorrow.";
 
+    /**
+     * Templates
+     *
+     * @author Harold Rojas Plasencia
+     * @since 2026-10-03
+     */
     @CheckedTemplate
     static class Templates {
         static native TemplateInstance index(Level[] levels, boolean accessCodeRequired, boolean mock);

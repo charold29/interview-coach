@@ -4,9 +4,10 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Structured result of evaluating one answer. The model fills the fields; the
- * overall score and the level are computed here so they are deterministic and
- * always follow the rubric bands, whatever the model says.
+ * Evaluation
+ *
+ * @author Harold Rojas Plasencia
+ * @since 2026-10-03
  */
 public record Evaluation(
         boolean technicallyIncorrect,

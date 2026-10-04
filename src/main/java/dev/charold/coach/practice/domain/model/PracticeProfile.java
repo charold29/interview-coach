@@ -1,8 +1,10 @@
 package dev.charold.coach.practice.domain.model;
 
 /**
- * What the candidate is practicing for. Kept deliberately small: the goal is
- * to calibrate the evaluation, not to collect a full CV.
+ * PracticeProfile
+ *
+ * @author Harold Rojas Plasencia
+ * @since 2026-10-03
  */
 public record PracticeProfile(
         String role,

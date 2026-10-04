@@ -8,9 +8,10 @@ import java.util.concurrent.atomic.AtomicReference;
 import dev.charold.coach.practice.domain.port.out.UsageQuotaPort;
 
 /**
- * Secondary adapter: a global daily cap on evaluator calls, held in memory.
- * Good for a single instance; a restart resets it. Running several replicas
- * needs a shared store behind the same port.
+ * InMemoryUsageQuotaAdapter
+ *
+ * @author Harold Rojas Plasencia
+ * @since 2026-10-03
  */
 public class InMemoryUsageQuotaAdapter implements UsageQuotaPort {
 

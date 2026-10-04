@@ -7,8 +7,10 @@ import dev.charold.coach.practice.domain.model.PracticeProfile;
 import dev.charold.coach.practice.domain.model.RewriteDirection;
 
 /**
- * Fields posted by the practice form. The profile fields travel with every
- * request because the server keeps no session: they live in the browser.
+ * PracticeForm
+ *
+ * @author Harold Rojas Plasencia
+ * @since 2026-10-03
  */
 public class PracticeForm {
 

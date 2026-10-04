@@ -1,7 +1,10 @@
 package dev.charold.coach.practice.domain.model;
 
 /**
- * How a model answer should change when the candidate asks for another version.
+ * RewriteDirection
+ *
+ * @author Harold Rojas Plasencia
+ * @since 2026-10-03
  */
 public enum RewriteDirection {
     SHORTER,

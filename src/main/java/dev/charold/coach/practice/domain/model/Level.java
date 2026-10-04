@@ -1,7 +1,10 @@
 package dev.charold.coach.practice.domain.model;
 
 /**
- * Seniority levels and the score bands that map to them (see docs/rubric.md).
+ * Level
+ *
+ * @author Harold Rojas Plasencia
+ * @since 2026-10-03
  */
 public enum Level {
     JUNIOR("Junior", "Doesn't clear the technical bar."),

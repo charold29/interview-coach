@@ -3,9 +3,10 @@ package dev.charold.coach.practice.infrastructure.adapter.out.ai.dto;
 import java.util.List;
 
 /**
- * The JSON shape the language model fills in. Field names are part of the
- * prompt contract (the system prompt refers to them), so change them together
- * with {@code InterviewCoach}.
+ * AiEvaluationDto
+ *
+ * @author Harold Rojas Plasencia
+ * @since 2026-10-03
  */
 public record AiEvaluationDto(
         boolean technicallyIncorrect,
@@ -20,6 +21,12 @@ public record AiEvaluationDto(
         List<AiEnglishFixDto> englishFixes,
         String followUp) {
 
+    /**
+     * AiEnglishFixDto
+     *
+     * @author Harold Rojas Plasencia
+     * @since 2026-10-03
+     */
     public record AiEnglishFixDto(String youSaid, String better, String why) {
     }
 }

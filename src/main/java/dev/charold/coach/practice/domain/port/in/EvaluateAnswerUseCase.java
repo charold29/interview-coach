@@ -5,7 +5,10 @@ import dev.charold.coach.practice.domain.model.Evaluation;
 import dev.charold.coach.practice.domain.model.PracticeProfile;
 
 /**
- * Driver port: score a candidate's answer to an interview question.
+ * EvaluateAnswerUseCase
+ *
+ * @author Harold Rojas Plasencia
+ * @since 2026-10-03
  */
 public interface EvaluateAnswerUseCase {
 

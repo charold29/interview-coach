@@ -1,7 +1,10 @@
 package dev.charold.coach.practice.domain.model;
 
 /**
- * One English correction: what the candidate said, a better phrasing, and why.
+ * EnglishFix
+ *
+ * @author Harold Rojas Plasencia
+ * @since 2026-10-03
  */
 public record EnglishFix(String youSaid, String better, String why) {
 }

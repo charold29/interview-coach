@@ -22,8 +22,10 @@ import dev.charold.coach.practice.infrastructure.adapter.out.ai.mock.MockEvaluat
 import dev.charold.coach.practice.infrastructure.adapter.out.quota.InMemoryUsageQuotaAdapter;
 
 /**
- * The only place that knows which adapter backs which port. Application
- * services and adapters stay plain Java; CDI wiring happens here.
+ * PracticeBeanConfig
+ *
+ * @author Harold Rojas Plasencia
+ * @since 2026-10-03
  */
 @Singleton
 public class PracticeBeanConfig {

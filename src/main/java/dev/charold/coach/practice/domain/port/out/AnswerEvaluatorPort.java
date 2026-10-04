@@ -5,8 +5,10 @@ import dev.charold.coach.practice.domain.model.PracticeProfile;
 import dev.charold.coach.practice.domain.model.RewriteDirection;
 
 /**
- * Driven port: whatever does the actual judging. Today a language model or a
- * canned mock; the domain doesn't know which.
+ * AnswerEvaluatorPort
+ *
+ * @author Harold Rojas Plasencia
+ * @since 2026-10-03
  */
 public interface AnswerEvaluatorPort {
 
